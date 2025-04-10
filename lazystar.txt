@@ -1,0 +1,24 @@
+!pip install twilio requests
+from twilio.rest import Client
+import requests
+import os  # Required for environment variables
+
+# Fetch credentials from environment variables (set in GitHub Secrets)
+account_sid = os.environ['TWILIO_ACCOUNT_SID']
+auth_token = os.environ['TWILIO_AUTH_TOKEN']
+twilio_whatsapp_num = '+14155238886'  # Twilio's sandbox number (safe to keep)
+your_whatsapp_num = os.environ['YOUR_WHATSAPP_NUM']
+
+# Fetch quote
+quote_data = requests.get("https://zenquotes.io/api/random").json()
+quote = f"🔥 Daily Motivation:\n\n{quote_data[0]['q']}\n—{quote_data[0]['a']}"
+
+# Send via WhatsApp
+client = Client(account_sid, auth_token)
+message = client.messages.create(
+    body=quote,
+    from_=f'whatsapp:{twilio_whatsapp_num}',
+    to=f'whatsapp:{your_whatsapp_num}'
+)
+
+print(f"✅ Quote sent to WhatsApp! Message SID: {message.sid}")
